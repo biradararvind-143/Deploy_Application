@@ -5,17 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BBrothers Web App</title>
 <style>
-body {font-family: Arial; margin:0;}
-header {background:#222; color:#fff; padding:15px; text-align:center;}
-nav {background:#444; padding:10px; text-align:center;}
-nav a {color:white; margin:10px; text-decoration:none; cursor:pointer;}
-section {padding:20px; display:none;}
-.active {display:block;}
-footer {background:#222; color:#fff; text-align:center; padding:10px; position:fixed; bottom:0; width:100%;}
-.form-box {max-width:300px; margin:auto;}
-input {width:100%; padding:8px; margin:5px 0;}
-button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
-.logo {font-size:28px; font-weight:bold; color:#00ffcc;}
+:root{
+  --bg:#0f172a;
+  --card:#111827;
+  --accent:#22c55e;
+  --accent-2:#06b6d4;
+  --text:#e5e7eb;
+}
+*{box-sizing:border-box}
+body {font-family: Arial; margin:0; background:#020617; color:white;} 
+header {padding:15px; text-align:center;} 
+.logo {font-size:32px; font-weight:bold; color:#00ffcc;}
+section {display:none; padding:20px;} 
+.active {display:block;} 
+.form-box {max-width:350px; margin:auto; background:#111; padding:20px; border-radius:10px;} 
+input {width:100%; padding:10px; margin:5px 0;} 
+button {padding:10px; width:100%; background:linear-gradient(45deg,#22c55e,#06b6d4); color:#000; border:none; cursor:pointer;} 
+nav a {margin:10px; cursor:pointer; color:#00ffcc;}
+
+/* PRODUCT CARDS */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px;}
+.card{background:#111; border-radius:12px; overflow:hidden; transition:0.3s;}
+.card:hover{transform:scale(1.05);}
+.card img{width:100%; height:150px; object-fit:cover;}
+.card-body{padding:10px;}
+.price{color:#22c55e;}
+.rating{color:gold;}
+.add-btn{margin-top:10px;}
 </style>
 </head>
 <body>
@@ -28,10 +44,10 @@ button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
 <section id="login" class="active">
 <div class="form-box">
 <h2>Login</h2>
-<input type="text" id="loginUser" placeholder="Username">
+<input type="email" id="loginUser" placeholder="Email">
 <input type="password" id="loginPass" placeholder="Password">
 <button onclick="login()">Login</button>
-<p>Don't have account? <a onclick="show('register')">Register</a></p>
+<p><a onclick="show('register')">Register</a></p>
 </div>
 </section>
 
@@ -39,10 +55,11 @@ button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
 <section id="register">
 <div class="form-box">
 <h2>Register</h2>
-<input type="text" id="regUser" placeholder="Username">
+<input type="email" id="regUser" placeholder="Email">
 <input type="password" id="regPass" placeholder="Password">
+<input type="text" id="place" placeholder="Place">
+<input type="text" id="state" placeholder="State">
 <button onclick="register()">Register</button>
-<p>Already have account? <a onclick="show('login')">Login</a></p>
 </div>
 </section>
 
@@ -52,11 +69,9 @@ button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
 <a onclick="show('home')">Home</a>
 <a onclick="show('products')">Products</a>
 <a onclick="show('cart')">Cart</a>
-<a onclick="show('about')">About Us</a>
 <a onclick="logout()">Logout</a>
 </nav>
-<h2>Welcome to BBrothers</h2>
-<p>Your one-stop shop!</p>
+<h2>Welcome</h2>
 </section>
 
 <!-- PRODUCTS -->
@@ -65,91 +80,78 @@ button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
 <a onclick="show('home')">Home</a>
 <a onclick="show('products')">Products</a>
 <a onclick="show('cart')">Cart</a>
-<a onclick="show('about')">About Us</a>
 <a onclick="logout()">Logout</a>
 </nav>
-<h2>Products</h2>
-<ul>
-<li>Steel Bowl <button onclick="addCart('Steel Bowl')">Add</button></li>
-<li>Cooker <button onclick="addCart('Cooker')">Add</button></li>
-<li>Water Jug <button onclick="addCart('Water Jug')">Add</button></li>
-</ul>
+<div class="grid" id="productGrid"></div>
 </section>
 
 <!-- CART -->
 <section id="cart">
-<nav>
-<a onclick="show('home')">Home</a>
-<a onclick="show('products')">Products</a>
-<a onclick="show('cart')">Cart</a>
-<a onclick="show('about')">About Us</a>
-<a onclick="logout()">Logout</a>
-</nav>
-<h2>Your Cart</h2>
+<h2>Cart</h2>
 <ul id="cartItems"></ul>
 </section>
 
-<!-- ABOUT -->
-<section id="about">
-<nav>
-<a onclick="show('home')">Home</a>
-<a onclick="show('products')">Products</a>
-<a onclick="show('cart')">Cart</a>
-<a onclick="show('about')">About Us</a>
-<a onclick="logout()">Logout</a>
-</nav>
-<h2>About Us</h2>
-<p>BBrothers is a trusted brand for quality products.</p>
-</section>
-
-<footer>
-<p>Contact Us: bbrothers@gmail.com | Company Info: BBrothers Pvt Ltd</p>
-</footer>
-
 <script>
-let cart = [];
+let cart=[];
 
-function show(id){
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+const products=[
+{name:'Bowl',price:200,img:'https://via.placeholder.com/200'},
+{name:'Cooker',price:1500,img:'https://via.placeholder.com/200'},
+{name:'Jug',price:500,img:'https://via.placeholder.com/200'}
+];
+
+function encrypt(p){return btoa(p);} 
+function decrypt(p){return atob(p);} 
 
 function register(){
-  let u=document.getElementById('regUser').value;
-  let p=document.getElementById('regPass').value;
-  localStorage.setItem(u,p);
-  alert('Registered Successfully');
-  show('login');
+let email=document.getElementById('regUser').value;
+let pass=encrypt(document.getElementById('regPass').value);
+let place=document.getElementById('place').value;
+let state=document.getElementById('state').value;
+localStorage.setItem(email,JSON.stringify({pass,place,state}));
+alert('Registered');
+show('login');
 }
 
 function login(){
-  let u=document.getElementById('loginUser').value;
-  let p=document.getElementById('loginPass').value;
-  if(localStorage.getItem(u)==p){
-    alert('Login Success');
-    show('home');
-  } else {
-    alert('Invalid Credentials');
-  }
+let email=document.getElementById('loginUser').value;
+let pass=document.getElementById('loginPass').value;
+let data=JSON.parse(localStorage.getItem(email));
+if(data && decrypt(data.pass)==pass){alert('Login success');show('home');}
+else alert('Invalid');
 }
 
-function logout(){
-  show('login');
+function show(id){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+if(id==='products') renderProducts();
 }
 
-function addCart(item){
-  cart.push(item);
-  displayCart();
+function renderProducts(){
+let grid=document.getElementById('productGrid');
+grid.innerHTML='';
+products.forEach(p=>{
+let rating=(Math.random()*5).toFixed(1);
+let div=document.createElement('div');
+div.className='card';
+div.innerHTML=`
+<img src="${p.img}">
+<div class="card-body">
+<h3>${p.name}</h3>
+<p class="price">₹${p.price}</p>
+<p class="rating">⭐ ${rating}</p>
+<button onclick="addCart('${p.name}')">Add</button>
+</div>`;
+grid.appendChild(div);
+});
 }
+
+function addCart(item){cart.push(item);displayCart();}
 
 function displayCart(){
-  let list=document.getElementById('cartItems');
-  list.innerHTML='';
-  cart.forEach(i=>{
-    let li=document.createElement('li');
-    li.innerText=i;
-    list.appendChild(li);
-  });
+let list=document.getElementById('cartItems');
+list.innerHTML='';
+cart.forEach(i=>{let li=document.createElement('li');li.innerText=i;list.appendChild(li);});
 }
 </script>
 
