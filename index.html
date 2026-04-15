@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBrothers Web App</title>
+<style>
+body {font-family: Arial; margin:0;}
+header {background:#222; color:#fff; padding:15px; text-align:center;}
+nav {background:#444; padding:10px; text-align:center;}
+nav a {color:white; margin:10px; text-decoration:none; cursor:pointer;}
+section {padding:20px; display:none;}
+.active {display:block;}
+footer {background:#222; color:#fff; text-align:center; padding:10px; position:fixed; bottom:0; width:100%;}
+.form-box {max-width:300px; margin:auto;}
+input {width:100%; padding:8px; margin:5px 0;}
+button {padding:10px; width:100%; background:#28a745; color:#fff; border:none;}
+.logo {font-size:28px; font-weight:bold; color:#00ffcc;}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">BBrothers</div>
+</header>
+
+<!-- LOGIN -->
+<section id="login" class="active">
+<div class="form-box">
+<h2>Login</h2>
+<input type="text" id="loginUser" placeholder="Username">
+<input type="password" id="loginPass" placeholder="Password">
+<button onclick="login()">Login</button>
+<p>Don't have account? <a onclick="show('register')">Register</a></p>
+</div>
+</section>
+
+<!-- REGISTER -->
+<section id="register">
+<div class="form-box">
+<h2>Register</h2>
+<input type="text" id="regUser" placeholder="Username">
+<input type="password" id="regPass" placeholder="Password">
+<button onclick="register()">Register</button>
+<p>Already have account? <a onclick="show('login')">Login</a></p>
+</div>
+</section>
+
+<!-- HOME -->
+<section id="home">
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('products')">Products</a>
+<a onclick="show('cart')">Cart</a>
+<a onclick="show('about')">About Us</a>
+<a onclick="logout()">Logout</a>
+</nav>
+<h2>Welcome to BBrothers</h2>
+<p>Your one-stop shop!</p>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('products')">Products</a>
+<a onclick="show('cart')">Cart</a>
+<a onclick="show('about')">About Us</a>
+<a onclick="logout()">Logout</a>
+</nav>
+<h2>Products</h2>
+<ul>
+<li>Steel Bowl <button onclick="addCart('Steel Bowl')">Add</button></li>
+<li>Cooker <button onclick="addCart('Cooker')">Add</button></li>
+<li>Water Jug <button onclick="addCart('Water Jug')">Add</button></li>
+</ul>
+</section>
+
+<!-- CART -->
+<section id="cart">
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('products')">Products</a>
+<a onclick="show('cart')">Cart</a>
+<a onclick="show('about')">About Us</a>
+<a onclick="logout()">Logout</a>
+</nav>
+<h2>Your Cart</h2>
+<ul id="cartItems"></ul>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('products')">Products</a>
+<a onclick="show('cart')">Cart</a>
+<a onclick="show('about')">About Us</a>
+<a onclick="logout()">Logout</a>
+</nav>
+<h2>About Us</h2>
+<p>BBrothers is a trusted brand for quality products.</p>
+</section>
+
+<footer>
+<p>Contact Us: bbrothers@gmail.com | Company Info: BBrothers Pvt Ltd</p>
+</footer>
+
+<script>
+let cart = [];
+
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function register(){
+  let u=document.getElementById('regUser').value;
+  let p=document.getElementById('regPass').value;
+  localStorage.setItem(u,p);
+  alert('Registered Successfully');
+  show('login');
+}
+
+function login(){
+  let u=document.getElementById('loginUser').value;
+  let p=document.getElementById('loginPass').value;
+  if(localStorage.getItem(u)==p){
+    alert('Login Success');
+    show('home');
+  } else {
+    alert('Invalid Credentials');
+  }
+}
+
+function logout(){
+  show('login');
+}
+
+function addCart(item){
+  cart.push(item);
+  displayCart();
+}
+
+function displayCart(){
+  let list=document.getElementById('cartItems');
+  list.innerHTML='';
+  cart.forEach(i=>{
+    let li=document.createElement('li');
+    li.innerText=i;
+    list.appendChild(li);
+  });
+}
+</script>
+
+</body>
+</html>
