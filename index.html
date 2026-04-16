@@ -308,3 +308,153 @@ You can extend:
 - checkout.html
 - login.html
 ========================= -->
+
+
+<!-- =========================
+11. Animated Images & Effects
+========================= -->
+
+<!-- Add this inside Hero Section (index.html) -->
+<div class="floating-flowers">
+  <img src="images/flower1.png" class="float f1">
+  <img src="images/flower2.png" class="float f2">
+  <img src="images/flower3.png" class="float f3">
+</div>
+
+<!-- Add this SCSS -->
+.floating-flowers {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.float {
+  position: absolute;
+  width: 80px;
+  animation: floatAnim 10s infinite ease-in-out;
+}
+
+.f1 { left: 10%; top: 80%; animation-delay: 0s; }
+.f2 { left: 50%; top: 90%; animation-delay: 3s; }
+.f3 { left: 80%; top: 85%; animation-delay: 6s; }
+
+@keyframes floatAnim {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-200px) rotate(180deg); opacity: 1; }
+  100% { transform: translateY(0) rotate(360deg); opacity: 0.8; }
+}
+
+
+<!-- =========================
+12. Image Hover Animation (Cards)
+========================= -->
+.card img {
+  transition: transform 0.5s ease;
+}
+
+.card:hover img {
+  transform: scale(1.1) rotate(2deg);
+}
+
+
+<!-- =========================
+13. Background Gradient Animation
+========================= -->
+body {
+  background: linear-gradient(-45deg, #ffe0ec, #ffc2d1, #fff5f8, #ffd6e0);
+  background-size: 400% 400%;
+  animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+<!-- =========================
+14. Product Image Slider (Optional)
+========================= -->
+<div id="flowerCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="images/slider1.jpg" class="d-block w-100">
+    </div>
+    <div class="carousel-item">
+      <img src="images/slider2.jpg" class="d-block w-100">
+    </div>
+    <div class="carousel-item">
+      <img src="images/slider3.jpg" class="d-block w-100">
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================
+15. Loader Animation
+========================= -->
+<div id="loader">
+  <div class="spinner-border text-success"></div>
+</div>
+
+<script>
+window.addEventListener("load", () => {
+  document.getElementById("loader").style.display = "none";
+});
+</script>
+
+<style>
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+</style>
+
+
+<!-- =========================
+INSTRUCTIONS:
+Add flower PNG images with transparent background for best effect.
+Example: flower1.png, flower2.png
+
+
+<!-- =========================
+16. Smart AI-Based Product Recommendations (Frontend Logic)
+========================= -->
+
+<!-- Add this section in index.html below Featured Products -->
+<section class="container py-5">
+  <h2 class="text-center mb-4">Recommended For You 🌸</h2>
+  <div class="row" id="recommendedProducts"></div>
+</section>
+
+<!-- =========================
+JS: Recommendation Engine (Rule-Based AI Simulation)
+========================= -->
+<script>
+// Simulated user behavior (can be based on cart/history)
+function getUserPreferences(){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let categories = cart.map(p => p.category);
+  return categories.length ? categories : ["Roses"];
+}
+
+function recommendProducts(){
+  let prefs = getUserPreferences();
+  let recommended = products.filter(p => prefs.includes(p.category));
+
+  // fallback if no match
+  if(recommended.length === 0){
+    recommended = products.slice(0,3);
+  }
+
+  let container = doc
